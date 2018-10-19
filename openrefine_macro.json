@@ -1,0 +1,559 @@
+[
+  {
+    "op": "core/mass-edit",
+    "description": "Mass edit cells in column Publisher",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": []
+    },
+    "columnName": "Publisher",
+    "expression": "value",
+    "edits": [
+      {
+        "fromBlank": false,
+        "fromError": false,
+        "from": [
+          "MDPI AG "
+        ],
+        "to": "MDPI AG"
+      }
+    ]
+  },
+  {
+    "op": "core/mass-edit",
+    "description": "Mass edit cells in column Language",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": []
+    },
+    "columnName": "Language",
+    "expression": "value",
+    "edits": [
+      {
+        "fromBlank": false,
+        "fromError": false,
+        "from": [
+          "English"
+        ],
+        "to": "EN"
+      }
+    ]
+  },
+  {
+    "op": "core/multivalued-cell-split",
+    "description": "Split multi-valued cells in column Authors",
+    "columnName": "Authors",
+    "keyColumnName": "Title",
+    "mode": "separator",
+    "separator": "|",
+    "regex": false
+  },
+  {
+    "op": "core/text-transform",
+    "description": "Text transform on cells in column Date using expression value.toDate()",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": []
+    },
+    "columnName": "Date",
+    "expression": "value.toDate()",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  },
+  {
+    "op": "core/column-addition",
+    "description": "Create column volume at index 10 based on column Citation using expression grel:value.match(/.*?(\\d+).*?/)[0]",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": [
+        {
+          "selectNonTime": true,
+          "expression": "value",
+          "selectBlank": false,
+          "selectError": true,
+          "selectTime": true,
+          "name": "Date",
+          "from": 1420070400000,
+          "to": 1421020800000,
+          "type": "timerange",
+          "columnName": "Date"
+        }
+      ]
+    },
+    "newColumnName": "volume",
+    "columnInsertIndex": 10,
+    "baseColumnName": "Citation",
+    "expression": "grel:value.match(/.*?(\\d+).*?/)[0]",
+    "onError": "set-to-blank"
+  },
+  {
+    "op": "core/column-addition",
+    "description": "Create column Year at index 10 based on column Citation using expression grel:value.match(/.*(\\d{4}).*/)[0]",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": [
+        {
+          "selectNonTime": true,
+          "expression": "value",
+          "selectBlank": false,
+          "selectError": true,
+          "selectTime": true,
+          "name": "Date",
+          "from": 1420070400000,
+          "to": 1421020800000,
+          "type": "timerange",
+          "columnName": "Date"
+        }
+      ]
+    },
+    "newColumnName": "Year",
+    "columnInsertIndex": 10,
+    "baseColumnName": "Citation",
+    "expression": "grel:value.match(/.*(\\d{4}).*/)[0]",
+    "onError": "set-to-blank"
+  },
+  {
+    "op": "core/column-addition",
+    "description": "Create column Journal Name at index 10 based on column Citation using expression grel:value.match(/.*(^((\\w+)(\\s*)){1,})+.*/)[0]",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": [
+        {
+          "selectNonTime": true,
+          "expression": "value",
+          "selectBlank": false,
+          "selectError": true,
+          "selectTime": true,
+          "name": "Date",
+          "from": 1420070400000,
+          "to": 1421020800000,
+          "type": "timerange",
+          "columnName": "Date"
+        }
+      ]
+    },
+    "newColumnName": "Journal Name",
+    "columnInsertIndex": 10,
+    "baseColumnName": "Citation",
+    "expression": "grel:value.match(/.*(^((\\w+)(\\s*)){1,})+.*/)[0]",
+    "onError": "set-to-blank"
+  },
+  {
+    "op": "core/text-transform",
+    "description": "Text transform on cells in column Title using expression value.toTitlecase()",
+    "engineConfig": {
+      "mode": "row-based",
+      "facets": [
+        {
+          "selectNonTime": true,
+          "expression": "value",
+          "selectBlank": false,
+          "selectError": true,
+          "selectTime": true,
+          "name": "Date",
+          "from": 1420070400000,
+          "to": 1421020800000,
+          "type": "timerange",
+          "columnName": "Date"
+        }
+      ]
+    },
+    "columnName": "Title",
+    "expression": "value.toTitlecase()",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  },
+  {
+    "op": "core/column-addition-by-fetching-urls",
+    "description": "Create column Journal info at index 8 by fetching URLs based on column ISSNs using expression grel:\"https://api.crossref.org/journals/\"+value",
+    "engineConfig": {
+      "mode": "record-based",
+      "facets": [
+        {
+          "omitError": false,
+          "expression": "value",
+          "selectBlank": false,
+          "selection": [
+            {
+              "v": {
+                "v": "Journal of Drug Delivery and Therapeutics",
+                "l": "Journal of Drug Delivery and Therapeutics"
+              }
+            }
+          ],
+          "selectError": false,
+          "invert": false,
+          "name": "Journal Name",
+          "omitBlank": false,
+          "type": "list",
+          "columnName": "Journal Name"
+        }
+      ]
+    },
+    "newColumnName": "Journal info",
+    "columnInsertIndex": 8,
+    "baseColumnName": "ISSNs",
+    "urlExpression": "grel:\"https://api.crossref.org/journals/\"+value",
+    "onError": "set-to-blank",
+    "delay": 5000,
+    "cacheResponses": true,
+    "httpHeadersJson": [
+      {
+        "name": "authorization",
+        "value": ""
+      },
+      {
+        "name": "user-agent",
+        "value": "OpenRefine 3.0 [TRUNK]"
+      },
+      {
+        "name": "accept",
+        "value": "*/*"
+      }
+    ]
+  },
+  {
+    "op": "core/column-addition",
+    "description": "Create column journal title at index 9 based on column Journal info using expression grel:value.parseJson().message.title",
+    "engineConfig": {
+      "mode": "record-based",
+      "facets": [
+        {
+          "omitError": false,
+          "expression": "value",
+          "selectBlank": false,
+          "selection": [
+            {
+              "v": {
+                "v": "Journal of Drug Delivery and Therapeutics",
+                "l": "Journal of Drug Delivery and Therapeutics"
+              }
+            }
+          ],
+          "selectError": false,
+          "invert": false,
+          "name": "Journal Name",
+          "omitBlank": false,
+          "type": "list",
+          "columnName": "Journal Name"
+        }
+      ]
+    },
+    "newColumnName": "journal title",
+    "columnInsertIndex": 9,
+    "baseColumnName": "Journal info",
+    "expression": "grel:value.parseJson().message.title",
+    "onError": "set-to-blank"
+  },
+  {
+    "op": "core/recon",
+    "description": "Reconcile cells in column Subjects to type Q11862829",
+    "columnName": "Subjects",
+    "config": {
+      "mode": "standard-service",
+      "service": "https://tools.wmflabs.org/openrefine-wikidata/en/api",
+      "identifierSpace": "http://www.wikidata.org/entity/",
+      "schemaSpace": "http://www.wikidata.org/prop/direct/",
+      "type": {
+        "id": "Q11862829",
+        "name": "academic discipline"
+      },
+      "autoMatch": true,
+      "columnDetails": [],
+      "limit": 0
+    },
+    "engineConfig": {
+      "mode": "record-based",
+      "facets": [
+        {
+          "omitError": false,
+          "expression": "value",
+          "selectBlank": false,
+          "selection": [
+            {
+              "v": {
+                "v": "Journal of Drug Delivery and Therapeutics",
+                "l": "Journal of Drug Delivery and Therapeutics"
+              }
+            }
+          ],
+          "selectError": false,
+          "invert": false,
+          "name": "Journal Name",
+          "omitBlank": false,
+          "type": "list",
+          "columnName": "Journal Name"
+        }
+      ]
+    }
+  },
+  {
+    "op": "core/recon-judge-similar-cells",
+    "description": "Mark to create one single new item for all cells containing \"submerged fermentation|yeast extract|Xylanase|ammonium nitrate and assay.|Therapeutics. Psychotherapy|RC475-489|Psychiatry|RC435-571|Neurology. Diseases of the nervous system|RC346-429|Neurosciences. Biological psychiatry. Neuropsychiatry|RC321-571|Internal medicine|RC31-1245|Medicine|R\" in column Subjects",
+    "engineConfig": {
+      "mode": "record-based",
+      "facets": [
+        {
+          "omitError": false,
+          "expression": "value",
+          "selectBlank": false,
+          "selection": [
+            {
+              "v": {
+                "v": "Journal of Drug Delivery and Therapeutics",
+                "l": "Journal of Drug Delivery and Therapeutics"
+              }
+            }
+          ],
+          "selectError": false,
+          "invert": false,
+          "name": "Journal Name",
+          "omitBlank": false,
+          "type": "list",
+          "columnName": "Journal Name"
+        }
+      ]
+    },
+    "columnName": "Subjects",
+    "similarValue": "submerged fermentation|yeast extract|Xylanase|ammonium nitrate and assay.|Therapeutics. Psychotherapy|RC475-489|Psychiatry|RC435-571|Neurology. Diseases of the nervous system|RC346-429|Neurosciences. Biological psychiatry. Neuropsychiatry|RC321-571|Internal medicine|RC31-1245|Medicine|R",
+    "judgment": "new",
+    "shareNewTopics": true
+  },
+  {
+    "op": "core/recon-judge-similar-cells",
+    "description": "Mark to create one single new item for all cells containing \"Drug utilization pattern|Adverse Drug Reactions|Urinary Tract Infection|Renal Pharmacology|Therapeutics. Psychotherapy|RC475-489|Psychiatry|RC435-571|Neurology. Diseases of the nervous system|RC346-429|Neurosciences. Biological psychiatry. Neuropsychiatry|RC321-571|Internal medicine|RC31-1245|Medicine|R\" in column Subjects",
+    "engineConfig": {
+      "mode": "record-based",
+      "facets": [
+        {
+          "omitError": false,
+          "expression": "value",
+          "selectBlank": false,
+          "selection": [
+            {
+              "v": {
+                "v": "Journal of Drug Delivery and Therapeutics",
+                "l": "Journal of Drug Delivery and Therapeutics"
+              }
+            }
+          ],
+          "selectError": false,
+          "invert": false,
+          "name": "Journal Name",
+          "omitBlank": false,
+          "type": "list",
+          "columnName": "Journal Name"
+        }
+      ]
+    },
+    "columnName": "Subjects",
+    "similarValue": "Drug utilization pattern|Adverse Drug Reactions|Urinary Tract Infection|Renal Pharmacology|Therapeutics. Psychotherapy|RC475-489|Psychiatry|RC435-571|Neurology. Diseases of the nervous system|RC346-429|Neurosciences. Biological psychiatry. Neuropsychiatry|RC321-571|Internal medicine|RC31-1245|Medicine|R",
+    "judgment": "new",
+    "shareNewTopics": true
+  },
+  {
+    "op": "core/recon-judge-similar-cells",
+    "description": "Mark to create one single new item for all cells containing \"biologically active ozadiazoles|oxadiazoles as anticancers etc.|Oxadiazoles synthetic approaches|oxadiazoles as anticancers|Therapeutics. Psychotherapy|RC475-489|Psychiatry|RC435-571|Neurology. Diseases of the nervous system|RC346-429|Neurosciences. Biological psychiatry. Neuropsychiatry|RC321-571|Internal medicine|RC31-1245|Medicine|R\" in column Subjects",
+    "engineConfig": {
+      "mode": "record-based",
+      "facets": [
+        {
+          "omitError": false,
+          "expression": "value",
+          "selectBlank": false,
+          "selection": [
+            {
+              "v": {
+                "v": "Journal of Drug Delivery and Therapeutics",
+                "l": "Journal of Drug Delivery and Therapeutics"
+              }
+            }
+          ],
+          "selectError": false,
+          "invert": false,
+          "name": "Journal Name",
+          "omitBlank": false,
+          "type": "list",
+          "columnName": "Journal Name"
+        }
+      ]
+    },
+    "columnName": "Subjects",
+    "similarValue": "biologically active ozadiazoles|oxadiazoles as anticancers etc.|Oxadiazoles synthetic approaches|oxadiazoles as anticancers|Therapeutics. Psychotherapy|RC475-489|Psychiatry|RC435-571|Neurology. Diseases of the nervous system|RC346-429|Neurosciences. Biological psychiatry. Neuropsychiatry|RC321-571|Internal medicine|RC31-1245|Medicine|R",
+    "judgment": "new",
+    "shareNewTopics": true
+  },
+  {
+    "op": "core/recon-judge-similar-cells",
+    "description": "Mark to create one single new item for all cells containing \"Moist heat Sterilization|Process Validation|Critical and Variable parameters.|Therapeutics. Psychotherapy|RC475-489|Psychiatry|RC435-571|Neurology. Diseases of the nervous system|RC346-429|Neurosciences. Biological psychiatry. Neuropsychiatry|RC321-571|Internal medicine|RC31-1245|Medicine|R\" in column Subjects",
+    "engineConfig": {
+      "mode": "record-based",
+      "facets": [
+        {
+          "omitError": false,
+          "expression": "value",
+          "selectBlank": false,
+          "selection": [
+            {
+              "v": {
+                "v": "Journal of Drug Delivery and Therapeutics",
+                "l": "Journal of Drug Delivery and Therapeutics"
+              }
+            }
+          ],
+          "selectError": false,
+          "invert": false,
+          "name": "Journal Name",
+          "omitBlank": false,
+          "type": "list",
+          "columnName": "Journal Name"
+        }
+      ]
+    },
+    "columnName": "Subjects",
+    "similarValue": "Moist heat Sterilization|Process Validation|Critical and Variable parameters.|Therapeutics. Psychotherapy|RC475-489|Psychiatry|RC435-571|Neurology. Diseases of the nervous system|RC346-429|Neurosciences. Biological psychiatry. Neuropsychiatry|RC321-571|Internal medicine|RC31-1245|Medicine|R",
+    "judgment": "new",
+    "shareNewTopics": true
+  },
+  {
+    "op": "core/recon-judge-similar-cells",
+    "description": "Mark to create one single new item for all cells containing \"Pyrimidine Hydrazones|Biological active Pyrimidine|Schiff Bases|Therapeutics. Psychotherapy|RC475-489|Psychiatry|RC435-571|Neurology. Diseases of the nervous system|RC346-429|Neurosciences. Biological psychiatry. Neuropsychiatry|RC321-571|Internal medicine|RC31-1245|Medicine|R\" in column Subjects",
+    "engineConfig": {
+      "mode": "record-based",
+      "facets": [
+        {
+          "omitError": false,
+          "expression": "value",
+          "selectBlank": false,
+          "selection": [
+            {
+              "v": {
+                "v": "Journal of Drug Delivery and Therapeutics",
+                "l": "Journal of Drug Delivery and Therapeutics"
+              }
+            }
+          ],
+          "selectError": false,
+          "invert": false,
+          "name": "Journal Name",
+          "omitBlank": false,
+          "type": "list",
+          "columnName": "Journal Name"
+        }
+      ]
+    },
+    "columnName": "Subjects",
+    "similarValue": "Pyrimidine Hydrazones|Biological active Pyrimidine|Schiff Bases|Therapeutics. Psychotherapy|RC475-489|Psychiatry|RC435-571|Neurology. Diseases of the nervous system|RC346-429|Neurosciences. Biological psychiatry. Neuropsychiatry|RC321-571|Internal medicine|RC31-1245|Medicine|R",
+    "judgment": "new",
+    "shareNewTopics": true
+  },
+  {
+    "op": "core/recon-judge-similar-cells",
+    "description": "Mark to create one single new item for all cells containing \"Process Validation|Types|Validation Stages|Guidelines and Process.|Therapeutics. Psychotherapy|RC475-489|Psychiatry|RC435-571|Neurology. Diseases of the nervous system|RC346-429|Neurosciences. Biological psychiatry. Neuropsychiatry|RC321-571|Internal medicine|RC31-1245|Medicine|R\" in column Subjects",
+    "engineConfig": {
+      "mode": "record-based",
+      "facets": [
+        {
+          "omitError": false,
+          "expression": "value",
+          "selectBlank": false,
+          "selection": [
+            {
+              "v": {
+                "v": "Journal of Drug Delivery and Therapeutics",
+                "l": "Journal of Drug Delivery and Therapeutics"
+              }
+            }
+          ],
+          "selectError": false,
+          "invert": false,
+          "name": "Journal Name",
+          "omitBlank": false,
+          "type": "list",
+          "columnName": "Journal Name"
+        }
+      ]
+    },
+    "columnName": "Subjects",
+    "similarValue": "Process Validation|Types|Validation Stages|Guidelines and Process.|Therapeutics. Psychotherapy|RC475-489|Psychiatry|RC435-571|Neurology. Diseases of the nervous system|RC346-429|Neurosciences. Biological psychiatry. Neuropsychiatry|RC321-571|Internal medicine|RC31-1245|Medicine|R",
+    "judgment": "new",
+    "shareNewTopics": true
+  },
+  {
+    "op": "core/recon",
+    "description": "Reconcile cells in column Authors to type /people/person",
+    "columnName": "Authors",
+    "config": {
+      "mode": "standard-service",
+      "service": "http://refine.codefork.com/reconcile/orcid/smartnames",
+      "identifierSpace": "http://xmlns.com/foaf/0.1/",
+      "schemaSpace": "http://rdf.freebase.com/ns/type.object.id",
+      "type": {
+        "id": "/people/person",
+        "name": "Person"
+      },
+      "autoMatch": true,
+      "columnDetails": [],
+      "limit": 0
+    },
+    "engineConfig": {
+      "mode": "record-based",
+      "facets": [
+        {
+          "omitError": false,
+          "expression": "value",
+          "selectBlank": false,
+          "selection": [
+            {
+              "v": {
+                "v": "Society of Pharmaceutical Technocrats",
+                "l": "Society of Pharmaceutical Technocrats"
+              }
+            }
+          ],
+          "selectError": false,
+          "invert": false,
+          "name": "Publisher",
+          "omitBlank": false,
+          "type": "list",
+          "columnName": "Publisher"
+        }
+      ]
+    }
+  },
+  {
+    "op": "core/text-transform",
+    "description": "Text transform on cells in column Date using expression grel:value.toString (\"dd MMMM yyyy\")",
+    "engineConfig": {
+      "mode": "record-based",
+      "facets": [
+        {
+          "omitError": false,
+          "expression": "value",
+          "selectBlank": false,
+          "selection": [
+            {
+              "v": {
+                "v": "Society of Pharmaceutical Technocrats",
+                "l": "Society of Pharmaceutical Technocrats"
+              }
+            }
+          ],
+          "selectError": false,
+          "invert": false,
+          "name": "Publisher",
+          "omitBlank": false,
+          "type": "list",
+          "columnName": "Publisher"
+        }
+      ]
+    },
+    "columnName": "Date",
+    "expression": "grel:value.toString (\"dd MMMM yyyy\")",
+    "onError": "keep-original",
+    "repeat": false,
+    "repeatCount": 10
+  }
+]
